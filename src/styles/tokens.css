@@ -1,0 +1,130 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --color-carbon: #0A0A0B;
+  --color-mineral: #F5F3EF;
+  --color-concrete: #8A8A85;
+  --color-metal-k: #C9B37A;
+  --color-accent: #FF3B2F;
+
+  --font-display: "Clash Display", "Inter", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-body: "Inter", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+@layer base {
+  html {
+    background-color: var(--color-carbon);
+    color: var(--color-mineral);
+    font-family: var(--font-body);
+    scroll-behavior: auto;
+  }
+
+  body {
+    background-color: var(--color-carbon);
+    color: var(--color-mineral);
+    font-family: var(--font-body);
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+  }
+}
+
+/* Tipografia fluida obrigatória via clamp(), nunca px fixo em headline */
+.h-hero {
+  font-family: var(--font-display);
+  font-size: clamp(3.5rem, 10vw, 9rem);
+  line-height: 0.92;
+  letter-spacing: -0.02em;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.h-section {
+  font-family: var(--font-display);
+  font-size: clamp(2.5rem, 6.8vw, 6.25rem);
+  line-height: 0.94;
+  letter-spacing: -0.02em;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.h-editorial {
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 4.8vw, 4.5rem);
+  line-height: 0.96;
+  letter-spacing: -0.015em;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.h-sub {
+  font-family: var(--font-display);
+  font-size: clamp(1.35rem, 2.4vw, 2.25rem);
+  line-height: 1.05;
+  letter-spacing: -0.01em;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+/* Iluminação atmosférica sutil (<= 8% opacidade, sem grid decorativo) */
+.ambient-key-light {
+  background: radial-gradient(
+    circle at 65% 38%,
+    rgba(201, 179, 122, 0.07) 0%,
+    rgba(245, 243, 239, 0.03) 38%,
+    rgba(10, 10, 11, 0) 72%
+  );
+}
+
+.ambient-rim-light {
+  background: radial-gradient(
+    circle at 28% 55%,
+    rgba(201, 179, 122, 0.06) 0%,
+    rgba(10, 10, 11, 0) 68%
+  );
+}
+
+/* Brilho controlado apenas no pino/detalhe metálico "K" (raio <= 24px, opacidade <= 25%) */
+.k-pin-glow {
+  transition: box-shadow 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+    border-color 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.k-pin-glow:hover,
+.k-pin-glow:focus-visible {
+  box-shadow: 0 0 20px rgba(201, 179, 122, 0.22);
+  border-color: rgba(201, 179, 122, 0.75);
+}
+
+/* Elementos ativamente animados pelo ScrollTrigger/GSAP */
+.will-animate-transform {
+  will-change: transform;
+}
+
+/* Lenis smooth scroll helpers */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .will-animate-transform {
+    will-change: auto !important;
+    transform: none !important;
+  }
+}

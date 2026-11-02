@@ -3,109 +3,118 @@ import { BRAND_DATA } from '../../data/brand';
 import { ModelBackground } from './ModelBackground';
 import { scrollToSection } from '../../lib/lenis';
 import { MetalKPinSVG } from '../ui/BrandEmblems';
+import { Product3DStage } from '../product/Product3D';
 
 export const HeroExperience: React.FC = () => {
   return (
     <section
       id="section-presence"
       aria-label="Seção 01 — Presence"
-      className="relative min-h-screen w-full overflow-hidden flex flex-col justify-between pt-24 pb-10 md:pt-28 md:pb-12"
+      className="relative min-h-[100dvh] w-full overflow-hidden flex flex-col justify-between pt-20 pb-6 md:pt-28 md:pb-10"
     >
-      {/* Planos 1 e 2: Ambiente + Modelo Editorial */}
+      {/* Plano de fundo editorial com proteção de contraste */}
       <ModelBackground />
 
-      {/* Camada tipográfica monumental traseira (atravessa a composição atrás do produto 3D) */}
-      <div className="relative z-[5] max-w-[1440px] w-full mx-auto px-5 sm:px-8 md:px-12 pointer-events-none">
-        <div
-          data-hero-kicker
-          className="will-animate-transform inline-flex items-center gap-2.5 px-3 py-1.5 rounded border border-metalK/35 bg-carbon/75 backdrop-blur-sm mb-4"
-        >
-          <span className="w-1.5 h-1.5 rounded-full bg-metalK" />
-          <span className="text-[10px] sm:text-[11px] tracking-[0.26em] uppercase text-metalK font-medium">
-            {BRAND_DATA.hero.kicker}
-          </span>
-        </div>
+      {/* Conteúdo principal com hierarquia vertical própria no mobile (Título -> 3D -> Texto -> CTA) e 2 colunas no desktop */}
+      <div className="relative z-20 max-w-[1440px] w-full mx-auto px-5 sm:px-8 md:px-12 my-auto py-4 md:py-8">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-10 items-center">
+          {/* Coluna Esquerda (Desktop) / Topo (Mobile): Kicker + Headline Monumental */}
+          <div className="lg:col-span-6 flex flex-col items-start">
+            <div
+              data-hero-kicker
+              className="will-animate-transform inline-flex items-center gap-2.5 px-3 py-1.5 rounded-sm border border-metalK/40 bg-carbon/90 mb-4"
+            >
+              <span className="w-1.5 h-1.5 rounded-full bg-metalK" />
+              <span className="text-[10px] sm:text-[11px] tracking-[0.24em] uppercase text-metalK font-semibold">
+                {BRAND_DATA.hero.kicker}
+              </span>
+            </div>
 
-        <h1 className="h-hero text-mineral select-none">
-          <span
-            data-hero-title-back
-            className="will-animate-transform block tracking-[-0.03em] text-mineral/95"
-          >
-            {BRAND_DATA.hero.headlineTop}
-          </span>
-        </h1>
-      </div>
+            <h1 className="h-hero text-mineral select-none">
+              <span
+                data-hero-title-back
+                className="will-animate-transform block tracking-[-0.03em] text-mineral"
+              >
+                {BRAND_DATA.hero.headlineTop}
+              </span>
+            </h1>
 
-      {/* Espaço central onde a sandália Kenner 3D (Plano 3, z-10) reina em escala monumental */}
-      <div className="relative z-[15] my-auto py-16 md:py-24 pointer-events-none">
-        <div className="max-w-[1440px] mx-auto px-5 sm:px-8 md:px-12 flex justify-end">
-          <div
-            data-hero-badge
-            className="will-animate-transform hidden md:flex flex-col items-end text-right border-r-2 border-metalK/60 pr-4 py-1"
-          >
-            <span className="text-[10px] tracking-[0.24em] uppercase text-metalK font-semibold">
-              {BRAND_DATA.hero.modelReferenceTag}
-            </span>
-            <span className="text-xs text-concrete mt-1 max-w-[260px]">
-              Tiras em neoprene • Solado vulcanizado megatratorado • Amortecedor Re.Amp
-            </span>
-          </div>
-        </div>
-      </div>
-
-      {/* Plano frontal (z-20): Segunda parte do headline sobreposta + copy conceitual + CTA minimalista */}
-      <div className="relative z-20 max-w-[1440px] w-full mx-auto px-5 sm:px-8 md:px-12">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-end">
-          <div className="lg:col-span-8 pointer-events-none">
             <p
               data-hero-title-front
-              className="will-animate-transform h-editorial text-mineral drop-shadow-sm"
+              className="will-animate-transform h-editorial text-metalK mt-2"
             >
               {BRAND_DATA.hero.headlineBottom}
             </p>
+
+            {/* Em Desktop (>= 1024px), o texto de apoio e o CTA ficam abaixo do título na coluna esquerda */}
+            <div
+              data-hero-cta-block
+              className="hidden lg:flex flex-col items-start gap-6 mt-6 max-w-xl"
+            >
+              <p className="text-base text-mineral/90 leading-relaxed">
+                {BRAND_DATA.hero.lead}
+              </p>
+
+              <div className="flex flex-wrap items-center gap-3">
+                <button
+                  type="button"
+                  onClick={() => scrollToSection('#section-built-different')}
+                  className="k-pin-glow group relative min-h-[48px] inline-flex items-center gap-3.5 px-6 py-3.5 bg-mineral text-carbon font-display font-bold text-xs sm:text-sm tracking-[0.2em] uppercase rounded-sm border border-metalK/60 transition-all hover:bg-metalK hover:text-carbon"
+                >
+                  <MetalKPinSVG className="w-5 h-5 transition-transform duration-200 group-hover:rotate-6" />
+                  <span>{BRAND_DATA.hero.ctaPrimary}</span>
+                  <span className="w-2 h-2 rounded-full bg-accent" />
+                </button>
+              </div>
+            </div>
           </div>
 
-          <div
-            data-hero-cta-block
-            className="will-animate-transform lg:col-span-4 flex flex-col items-start lg:items-end justify-end gap-5"
-          >
-            <p className="text-sm sm:text-base text-mineral/85 leading-relaxed max-w-md lg:text-right">
+          {/* Palco 3D Dedicado: No mobile entra entre o Título e o Texto de apoio; no desktop ocupa a coluna direita */}
+          <div className="lg:col-span-6 w-full">
+            <Product3DStage
+              slotId="presence"
+              className="h-[240px] sm:h-[310px] lg:h-[440px] w-full rounded-sm border border-concrete/20 bg-carbon/50"
+              interactiveHint="ARRASTE PARA GIRAR 3D"
+            />
+          </div>
+
+          {/* Em Mobile/Tablet (< 1024px), o texto de apoio e o CTA vêm depois da cena 3D (ordem vertical limpa) */}
+          <div className="lg:hidden flex flex-col items-start gap-4">
+            <p className="text-sm sm:text-base text-mineral/90 leading-relaxed">
               {BRAND_DATA.hero.lead}
             </p>
 
-            <div className="flex flex-wrap items-center gap-4">
-              <button
-                type="button"
-                onClick={() => scrollToSection('#section-built-different')}
-                className="k-pin-glow group relative inline-flex items-center gap-3.5 px-6 py-3.5 bg-mineral text-carbon font-display font-bold text-xs sm:text-sm tracking-[0.2em] uppercase rounded-sm border border-metalK/50 transition-all hover:bg-metalK hover:text-carbon"
-              >
-                <MetalKPinSVG className="w-5 h-5 transition-transform duration-300 group-hover:rotate-6" />
-                <span>{BRAND_DATA.hero.ctaPrimary}</span>
-                <span className="w-2 h-2 rounded-full bg-accent" />
-              </button>
-            </div>
+            <button
+              type="button"
+              onClick={() => scrollToSection('#section-built-different')}
+              className="k-pin-glow group relative min-h-[48px] w-full sm:w-auto justify-center inline-flex items-center gap-3 px-6 py-3.5 bg-mineral text-carbon font-display font-bold text-xs sm:text-sm tracking-[0.2em] uppercase rounded-sm border border-metalK/60 transition-all hover:bg-metalK hover:text-carbon"
+            >
+              <MetalKPinSVG className="w-5 h-5" />
+              <span>{BRAND_DATA.hero.ctaPrimary}</span>
+              <span className="w-2 h-2 rounded-full bg-accent" />
+            </button>
           </div>
         </div>
+      </div>
 
-        {/* Rodapé da primeira dobra: linha de herança + indicador de rolagem */}
-        <div className="mt-8 pt-4 border-t border-concrete/20 flex flex-wrap items-center justify-between gap-4 text-[11px] tracking-[0.2em] uppercase text-concrete">
-          <div className="flex items-center gap-4">
-            <span>FUNDAÇÃO: {BRAND_DATA.meta.foundedYear} • {BRAND_DATA.meta.founder}</span>
-            <span className="hidden sm:inline text-metalK">•</span>
-            <span className="hidden sm:inline">{BRAND_DATA.meta.parentGroup}</span>
-          </div>
-
-          <button
-            type="button"
-            onClick={() => scrollToSection('#section-built-different')}
-            className="k-pin-glow inline-flex items-center gap-2.5 text-mineral/90 hover:text-metalK transition-colors py-1 px-2 rounded"
-          >
-            <span>{BRAND_DATA.hero.scrollPrompt}</span>
-            <span className="inline-block w-1.5 h-4 border border-metalK/60 rounded-full relative overflow-hidden">
-              <span className="absolute top-0.5 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-accent animate-bounce" />
-            </span>
-          </button>
+      {/* Rodapé discreto da seção: badge técnico movido para a base (nunca competindo com o 3D) + botão de rolagem (>= 44px) */}
+      <div className="relative z-20 max-w-[1440px] w-full mx-auto px-5 sm:px-8 md:px-12 pt-3 border-t border-concrete/20 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-[10px] sm:text-[11px] tracking-[0.18em] uppercase text-concrete">
+        <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+          <span className="text-metalK font-semibold">{BRAND_DATA.hero.modelReferenceTag}</span>
+          <span className="hidden md:inline">•</span>
+          <span>FUNDAÇÃO: {BRAND_DATA.meta.foundedYear} ({BRAND_DATA.meta.founder})</span>
         </div>
+
+        <button
+          type="button"
+          onClick={() => scrollToSection('#section-built-different')}
+          className="k-pin-glow min-h-[44px] self-start sm:self-auto inline-flex items-center gap-2.5 text-mineral hover:text-metalK transition-colors px-3 py-2 rounded-sm border border-concrete/20 bg-carbon/80"
+        >
+          <span>{BRAND_DATA.hero.scrollPrompt}</span>
+          <span className="inline-block w-1.5 h-4 border border-metalK/60 rounded-full relative overflow-hidden">
+            <span className="absolute top-0.5 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-accent animate-bounce" />
+          </span>
+        </button>
       </div>
     </section>
   );

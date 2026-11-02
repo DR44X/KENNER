@@ -12,12 +12,14 @@ export function initLenis(prefersReducedMotion: boolean): () => void {
     return () => {};
   }
 
+  const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
+
   const lenis = new Lenis({
-    duration: 1.15,
+    duration: isMobile ? 0.85 : 1.15,
     easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
     smoothWheel: true,
     wheelMultiplier: 0.95,
-    touchMultiplier: 1.5,
+    touchMultiplier: 1.25,
   });
 
   lenisInstance = lenis;
@@ -54,10 +56,12 @@ export function scrollToSection(target: string | number | HTMLElement) {
     resolved = target.parentElement?.classList.contains('pin-spacer') ? target.parentElement : target;
   }
 
+  const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
+
   if (lenisInstance) {
     lenisInstance.scrollTo(resolved, {
-      duration: 1.2,
-      easing: (t: number) => 1 - Math.pow(1 - t, 4),
+      duration: isMobile ? 0.85 : 1.2,
+      easing: (t: number) => 1 - Math.pow(1 - t, 3),
     });
   } else {
     if (typeof resolved === 'number') {

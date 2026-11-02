@@ -21,15 +21,25 @@ export default defineConfig({
         }
         if (id === '\0virtual:drei-slim') {
           return `
-            import { GLTFLoader } from 'three-stdlib';
+            import { GLTFLoader, DRACOLoader } from 'three-stdlib';
             import { useLoader } from '@react-three/fiber';
             export { Environment } from '@react-three/drei/core/Environment.js';
             export { ContactShadows } from '@react-three/drei/core/ContactShadows.js';
             export { PerspectiveCamera } from '@react-three/drei/core/PerspectiveCamera.js';
             export { Preload } from '@react-three/drei/core/Preload.js';
 
-            function extensions(_useDraco = true, _useMeshopt = false, extendLoader) {
+            let dracoLoader = null;
+            function extensions(useDraco = true, _useMeshopt = false, extendLoader) {
               return (loader) => {
+                if (useDraco) {
+                  if (!dracoLoader) {
+                    dracoLoader = new DRACOLoader();
+                  }
+                  dracoLoader.setDecoderPath(
+                    typeof useDraco === 'string' ? useDraco : '/assets/draco/gltf/'
+                  );
+                  loader.setDRACOLoader(dracoLoader);
+                }
                 if (extendLoader) extendLoader(loader);
               };
             }
@@ -38,7 +48,12 @@ export default defineConfig({
             useGLTF.preload = (path, useDraco, useMeshopt, extendLoader) =>
               useLoader.preload(GLTFLoader, path, extensions(useDraco, useMeshopt, extendLoader));
             useGLTF.clear = (path) => useLoader.clear(GLTFLoader, path);
-            useGLTF.setDecoderPath = () => {};
+            useGLTF.setDecoderPath = (decoderPath) => {
+              if (!dracoLoader) {
+                dracoLoader = new DRACOLoader();
+              }
+              dracoLoader.setDecoderPath(decoderPath);
+            };
           `;
         }
         return null;
@@ -48,6 +63,7 @@ export default defineConfig({
           return {
             code: `
               export { GLTFLoader } from './loaders/GLTFLoader.js';
+              export { DRACOLoader } from './loaders/DRACOLoader.js';
               export { RGBELoader } from './loaders/RGBELoader.js';
               export { HorizontalBlurShader } from './shaders/HorizontalBlurShader.js';
               export { VerticalBlurShader } from './shaders/VerticalBlurShader.js';

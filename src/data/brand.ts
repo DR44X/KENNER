@@ -25,6 +25,10 @@ export interface ReferenceLine {
   positioning: string;
   engineeringSummary: string;
   isPrimary3DReference?: boolean;
+  cameraPreset: {
+    position: [number, number, number];
+    rotation: [number, number, number];
+  };
 }
 
 export interface TimelineMilestone {
@@ -108,8 +112,8 @@ export const BRAND_DATA = {
           'Composto de borracha submetido à vulcanização sob calor e pressão, esculpido em desenhos tratorados com canaletas anguladas para tração agressiva no asfalto seco ou molhado.',
         technicalParallel: 'Paralelo industrial: vulcanização de pneus de alta aderência.',
         cameraPreset: {
-          position: [0.25, -0.32, 1.95],
-          rotation: [-0.48, 0.65, 0.12],
+          position: [0.22, -0.28, 1.98],
+          rotation: [-0.46, 0.62, 0.1],
           targetLabel: 'SOLADO VULCANIZADO & CANALETAS ANGULADAS',
         },
       },
@@ -122,8 +126,8 @@ export const BRAND_DATA = {
           'Arquitetura da linha Rakka com cavidade estrutural vazada no calcanhar. Atua como zona de deformação controlada, dissipando a energia vertical a cada pisada no concreto.',
         technicalParallel: 'Geometria funcional Re.Amp integrada ao bloco tratorado.',
         cameraPreset: {
-          position: [-0.42, -0.1, 1.85],
-          rotation: [0.16, 2.35, -0.08],
+          position: [-0.36, -0.08, 1.92],
+          rotation: [0.16, 2.32, -0.06],
           targetLabel: 'CAVIDADE ESTRUTURAL RE.AMP NO CALCANHAR',
         },
       },
@@ -136,8 +140,8 @@ export const BRAND_DATA = {
           'Tiras robustas construídas em poliéster/nylon de alta tenacidade (ou tecido ripstop acolchoado na versão Rakka Puffy), forradas internamente com neoprene macio que evita bolhas, aliado ao acabamento impermeável Hydro-Off em linhas dedicadas.',
         technicalParallel: 'Proteção térmica e mecânica contra abrasão contínua.',
         cameraPreset: {
-          position: [0.1, 0.42, 1.9],
-          rotation: [0.42, -0.35, 0.05],
+          position: [0.08, 0.38, 1.95],
+          rotation: [0.4, -0.35, 0.04],
           targetLabel: 'CABEDAL TÉCNICO & FORRO EM NEOPRENE',
         },
       },
@@ -150,8 +154,8 @@ export const BRAND_DATA = {
           'Desenvolvida em polímero com memória elástica — com versões lixadas voltadas ao uso urbano intenso e versões com película impermeável para ambientes aquáticos.',
         technicalParallel: 'Mapeamento anatômico de pressão plantar.',
         cameraPreset: {
-          position: [0.0, 0.55, 2.05],
-          rotation: [0.58, 0.22, -0.05],
+          position: [0.0, 0.52, 2.08],
+          rotation: [0.56, 0.22, -0.05],
           targetLabel: 'PALMILHA ANATÔMICA HIGH-CONFY',
         },
       },
@@ -164,8 +168,8 @@ export const BRAND_DATA = {
           'Aplicado em metal banhado diretamente sobre a tira robusta, o identificador "K" funciona como ponto de luz na peça e assinatura inconfundível em praticamente todos os modelos da marca.',
         technicalParallel: 'Hardware metálico anticorrosão cravado no cabedal.',
         cameraPreset: {
-          position: [0.38, 0.25, 1.75],
-          rotation: [0.22, -0.58, 0.08],
+          position: [0.32, 0.24, 1.82],
+          rotation: [0.22, -0.55, 0.06],
           targetLabel: 'PINO METÁLICO "K" NO CABEDAL',
         },
       },
@@ -181,6 +185,10 @@ export const BRAND_DATA = {
       engineeringSummary:
         'Tiras robustas com forro em neoprene (ou ripstop acolchoado na Rakka Puffy), palmilha High-Confy, solado megatratorado e peça amortecedora vazada Re.Amp no calcanhar.',
       isPrimary3DReference: true,
+      cameraPreset: {
+        position: [0.0, 0.28, 2.05],
+        rotation: [0.22, -0.48, 0.06],
+      },
     },
     {
       id: 'kivah',
@@ -189,6 +197,10 @@ export const BRAND_DATA = {
       positioning: 'Clássico urbano versátil que definiu a virada dos anos 2000.',
       engineeringSummary:
         'Solado em borracha vulcanizada tratorada de alta durabilidade, cabedal com forro em neoprene e equilíbrio entre uso diário e identidade de rua.',
+      cameraPreset: {
+        position: [0.15, 0.36, 2.0],
+        rotation: [0.38, -0.25, 0.04],
+      },
     },
     {
       id: 'megah',
@@ -197,6 +209,10 @@ export const BRAND_DATA = {
       positioning: 'A silhueta mais imponente visualmente do portfólio.',
       engineeringSummary:
         'Solado supertratorado diretamente inspirado em rodas de trator, elevando a escala escultural da borracha vulcanizada ao limite.',
+      cameraPreset: {
+        position: [0.22, -0.24, 1.96],
+        rotation: [-0.42, 0.58, 0.08],
+      },
     },
   ] satisfies ReferenceLine[],
 
@@ -213,11 +229,13 @@ export const BRAND_DATA = {
         index: '01',
         captionTitle: 'ARQUITETURA DE CONCRETO & ASFALTO',
         captionBody:
-          'Escadarias, vielas e avenidas que exigem tração real. O design pensado para o litoral nos anos 80 encontrou no concreto brasileiro sua vocação definitiva.',
+          'Escadarias, passarelas e avenidas que exigem tração real. O design pensado para o litoral nos anos 80 encontrou no concreto brasileiro sua vocação definitiva.',
         aspectClass: 'aspect-[4/5]',
-        image: '/assets/images/urban-01-arquitetura.png',
+        image: '/assets/images/urban-01-arquitetura.webp',
+        width: 800,
+        height: 1000,
         imageAlt:
-          'Arquitetura urbana brasileira em concreto e asfalto noturno iluminada por luz dourada lateral',
+          'Escadaria e passarela de arquitetura brutalista em concreto no Rio de Janeiro à noite com iluminação dourada refletindo no asfalto molhado',
       },
       {
         id: 'frame-baile',
@@ -226,9 +244,11 @@ export const BRAND_DATA = {
         captionBody:
           'Do baile à sessão de estúdio, a silhueta tratorada e o brilho discreto do pino "K" compõem o código visual de quem dita a estética urbana no Brasil.',
         aspectClass: 'aspect-[16/10]',
-        image: '/assets/images/urban-02-noite.png',
+        image: '/assets/images/urban-02-noite.webp',
+        width: 1280,
+        height: 800,
         imageAlt:
-          'Retrato editorial noturno de jovens adultos brasileiros vestindo streetwear autêntico em espaço urbano de concreto',
+          'Três jovens adultos brasileiros vestindo streetwear escuro autêntico e sandálias tratoradas em pátio urbano de concreto à noite',
       },
       {
         id: 'frame-ascensao',
@@ -237,9 +257,11 @@ export const BRAND_DATA = {
         captionBody:
           'Mais que status: o reconhecimento imediato entre pares. Uma conquista tangível que carrega respeito, identidade e memória afetiva periférica.',
         aspectClass: 'aspect-[3/4]',
-        image: '/assets/images/urban-03-presenca.png',
+        image: '/assets/images/urban-03-presenca.webp',
+        width: 900,
+        height: 1200,
         imageAlt:
-          'Modelo masculino brasileiro em terraço de concreto à noite com luzes da cidade ao fundo em contraluz dourado',
+          'Retrato editorial de jovem brasileiro vestindo streetwear escuro em terraço de concreto à noite com luzes do Rio de Janeiro desfocadas ao fundo',
       },
     ],
   },
@@ -266,7 +288,7 @@ export const BRAND_DATA = {
         description:
           'Enquadramento superior destacando as tiras largas de alta tenacidade, a palmilha High-Confy e o ponto focal do pino metálico "K".',
         rotation: [0.62, 0.28, -0.08] as [number, number, number],
-        cameraZ: 1.95,
+        cameraZ: 1.98,
       },
       {
         id: 'tracao-vulcanizada',
@@ -275,7 +297,7 @@ export const BRAND_DATA = {
         description:
           'Vista dramática inferior do solado de borracha vulcanizada, revelando o desenho tratorado inspirado na engenharia de pneus.',
         rotation: [-0.55, 0.85, 0.15] as [number, number, number],
-        cameraZ: 2.0,
+        cameraZ: 2.02,
       },
       {
         id: 'perspectiva-hero',
@@ -284,7 +306,7 @@ export const BRAND_DATA = {
         description:
           'Balanço entre o volume frontal da palmilha em polímero com memória, o forro interno em neoprene e a projeção agressiva do solado.',
         rotation: [0.24, -0.78, 0.06] as [number, number, number],
-        cameraZ: 1.9,
+        cameraZ: 1.95,
       },
     ],
   },

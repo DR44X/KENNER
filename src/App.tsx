@@ -4,7 +4,7 @@ import { HeroExperience } from './components/hero/HeroExperience';
 import { BuiltDifferent } from './components/sections/BuiltDifferent';
 import { Product3D } from './components/product/Product3D';
 import { ScrollController } from './components/scroll/ScrollController';
-import { useExperienceStore } from './components/scroll/../../store/useExperienceStore';
+import { useExperienceStore } from './store/useExperienceStore';
 import { TractorSoleSilhouetteSVG } from './components/ui/BrandEmblems';
 
 // React.lazy + Suspense nas seções abaixo da dobra conforme Seção 8
@@ -46,28 +46,16 @@ export const App: React.FC = () => {
     setWebglSupported(detectWebGLSupport());
 
     const mq = window.matchMedia('(prefers-reduced-motion: reduce)');
-    let lastMatches = mq.matches;
-    setPrefersReducedMotion(lastMatches);
+    setPrefersReducedMotion(mq.matches);
 
     const handleChange = (e: MediaQueryListEvent) => {
-      lastMatches = e.matches;
       setPrefersReducedMotion(e.matches);
     };
 
     mq.addEventListener('change', handleChange);
 
-    // Garante detecção imediata mesmo sob emulação via DevTools CDP
-    const syncId = window.setInterval(() => {
-      const current = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-      if (current !== lastMatches) {
-        lastMatches = current;
-        setPrefersReducedMotion(current);
-      }
-    }, 300);
-
     return () => {
       mq.removeEventListener('change', handleChange);
-      window.clearInterval(syncId);
     };
   }, [setPrefersReducedMotion, setWebglSupported]);
 
@@ -76,7 +64,7 @@ export const App: React.FC = () => {
       {/* Navegação fixa com progresso e emblema metálico "K" */}
       <Navigation />
 
-      {/* Palco 3D persistente (ou fallback estático para sem WebGL / reduced-motion) */}
+      {/* Gerenciador único de contexto WebGL (portado para o palco da seção ativa) */}
       <Product3D />
 
       {/* Coreografia de Scroll Storytelling sincronizada com Lenis + Zustand */}

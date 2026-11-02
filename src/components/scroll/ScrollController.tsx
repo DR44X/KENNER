@@ -162,19 +162,12 @@ export const ScrollController: React.FC<{ sectionsReady?: boolean }> = ({
           },
         });
 
-        tlBuiltDifferent
-          .fromTo(
-            '[data-bd-reveal]',
-            { y: isMobile ? 20 : 32, opacity: 0.25 },
-            { y: 0, opacity: 1, stagger: 0.06, ease: 'power2.out' },
-            0
-          )
-          .fromTo(
-            '[data-bd-mask-photo]',
-            { clipPath: isMobile ? 'inset(4% 2% 4% 2%)' : 'inset(10% 5% 10% 5%)', scale: 0.98 },
-            { clipPath: 'inset(0% 0% 0% 0%)', scale: 1, stagger: 0.12, ease: 'power2.out' },
-            0.04
-          );
+        tlBuiltDifferent.fromTo(
+          '[data-bd-reveal]',
+          { y: isMobile ? 20 : 32, opacity: 0.25 },
+          { y: 0, opacity: 1, stagger: 0.06, ease: 'power2.out' },
+          0
+        );
       }
 
       // =====================================================================

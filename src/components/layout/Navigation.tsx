@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useExperienceStore, ActiveSectionId } from '../../store/useExperienceStore';
 import { scrollToSection } from '../../lib/lenis';
 import { MetalKPinSVG } from '../ui/BrandEmblems';
 import { BRAND_DATA } from '../../data/brand';
+import { MagneticWrapper } from '../ui/MotionPrimitives';
 
 const NAV_ITEMS: { id: ActiveSectionId; index: string; label: string; target: string }[] = [
   { id: 'presence', index: '01', label: 'PRESENCE', target: '#section-presence' },
@@ -14,8 +15,19 @@ const NAV_ITEMS: { id: ActiveSectionId; index: string; label: string; target: st
 
 export const Navigation: React.FC = () => {
   const activeSection = useExperienceStore((s) => s.activeSection);
-  const scrollProgress = useExperienceStore((s) => s.scrollProgress);
+  const progressBarRef = useRef<HTMLDivElement>(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  // 14.6. Scroll Progress Indicator — atualização direta no DOM via subscribe (zero re-renders React no scroll)
+  useEffect(() => {
+    const unsub = useExperienceStore.subscribe((state) => {
+      if (progressBarRef.current) {
+        const p = Math.max(0.02, state.scrollProgress);
+        progressBarRef.current.style.transform = `scaleX(${p.toFixed(4)})`;
+      }
+    });
+    return unsub;
+  }, []);
 
   const activeItem = NAV_ITEMS.find((item) => item.id === activeSection) ?? NAV_ITEMS[0];
 
@@ -26,11 +38,18 @@ export const Navigation: React.FC = () => {
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 glass-surface">
-      {/* Barra superior de progresso de leitura cinematográfica */}
-      <div className="w-full h-[2px] bg-carbon/60 overflow-hidden">
+      {/* 14.6. Barra superior fina de progresso real do scroll */}
+      <div
+        className="w-full h-[2px] bg-carbon/60 overflow-hidden"
+        role="progressbar"
+        aria-label="Progresso de leitura da página"
+        aria-valuemin={0}
+        aria-valuemax={100}
+      >
         <div
-          className="h-full bg-metalK transition-transform duration-150 origin-left"
-          style={{ transform: `scaleX(${Math.max(0.02, scrollProgress)})` }}
+          ref={progressBarRef}
+          className="h-full bg-metalK origin-left"
+          style={{ transform: 'scaleX(0.02)' }}
         />
       </div>
 
@@ -78,7 +97,7 @@ export const Navigation: React.FC = () => {
           })}
         </nav>
 
-        {/* Controles à direita: Menu de capítulos Mobile/Tablet + Link rápido Estúdio 3D */}
+        {/* Controles à direita: Menu de capítulos Mobile/Tablet + Link rápido Estúdio 3D com Magnetic Cursor */}
         <div className="flex items-center gap-2">
           <button
             type="button"
@@ -97,14 +116,16 @@ export const Navigation: React.FC = () => {
             </span>
           </button>
 
-          <button
-            type="button"
-            onClick={() => handleNavigate('#section-spotlight')}
-            className="k-pin-glow glass-surface min-h-[44px] px-3 sm:px-3.5 py-2 rounded-sm text-[10px] sm:text-[11px] tracking-[0.18em] uppercase text-mineral hover:border-metalK flex items-center gap-2"
-          >
-            <span className="w-1.5 h-1.5 rounded-full bg-accent shrink-0" />
-            <span>3D STUDIO</span>
-          </button>
+          <MagneticWrapper maxDisplacement={5}>
+            <button
+              type="button"
+              onClick={() => handleNavigate('#section-spotlight')}
+              className="k-pin-glow glass-surface min-h-[44px] px-3 sm:px-3.5 py-2 rounded-sm text-[10px] sm:text-[11px] tracking-[0.18em] uppercase text-mineral hover:border-metalK flex items-center gap-2"
+            >
+              <span className="w-1.5 h-1.5 rounded-full bg-accent shrink-0" />
+              <span>3D STUDIO</span>
+            </button>
+          </MagneticWrapper>
         </div>
       </div>
 

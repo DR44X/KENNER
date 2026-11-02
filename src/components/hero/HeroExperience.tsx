@@ -1,25 +1,71 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { BRAND_DATA } from '../../data/brand';
 import { ModelBackground } from './ModelBackground';
 import { scrollToSection } from '../../lib/lenis';
 import { MetalKPinSVG } from '../ui/BrandEmblems';
 import { Product3DStage } from '../product/Product3D';
+import { MagneticWrapper, StaggerText } from '../ui/MotionPrimitives';
+import { useExperienceStore } from '../../store/useExperienceStore';
 
 export const HeroExperience: React.FC = () => {
+  const sectionRef = useRef<HTMLElement>(null);
+  const fgParallaxRef = useRef<HTMLDivElement>(null);
+
+  // 14.9. Hero Cursor Parallax — interpolado via rAF sem listeners de mouse duplicados e desativado no mobile
+  useEffect(() => {
+    let rafId: number | null = null;
+    let curX = 0;
+    let curY = 0;
+
+    const tick = () => {
+      const st = useExperienceStore.getState();
+      if (
+        st.activeSection === 'presence' &&
+        !st.isCoarsePointer &&
+        !st.prefersReducedMotion &&
+        window.innerWidth >= 1024
+      ) {
+        curX += (st.pointer.x - curX) * 0.08;
+        curY += (st.pointer.y - curY) * 0.08;
+
+        const bgEl = sectionRef.current?.querySelector<HTMLElement>('[data-hero-parallax-bg]');
+        if (bgEl) {
+          bgEl.style.transform = `translate3d(${(-curX * 11).toFixed(2)}px, ${(-curY * 7).toFixed(2)}px, 0)`;
+        }
+        if (fgParallaxRef.current) {
+          fgParallaxRef.current.style.transform = `translate3d(${(curX * 4.5).toFixed(2)}px, ${(curY * 3).toFixed(2)}px, 0)`;
+        }
+      } else {
+        const bgEl = sectionRef.current?.querySelector<HTMLElement>('[data-hero-parallax-bg]');
+        if (bgEl && bgEl.style.transform) bgEl.style.transform = '';
+        if (fgParallaxRef.current && fgParallaxRef.current.style.transform) {
+          fgParallaxRef.current.style.transform = '';
+        }
+      }
+      rafId = window.requestAnimationFrame(tick);
+    };
+
+    rafId = window.requestAnimationFrame(tick);
+    return () => {
+      if (rafId !== null) window.cancelAnimationFrame(rafId);
+    };
+  }, []);
+
   return (
     <section
+      ref={sectionRef}
       id="section-presence"
       aria-label="Seção 01 — Presence"
       className="relative min-h-[100dvh] w-full overflow-hidden flex flex-col justify-between pt-20 pb-6 md:pt-28 md:pb-10"
     >
-      {/* Plano de fundo editorial com proteção de contraste */}
+      {/* Plano de fundo editorial com proteção de contraste e parallax de cursor */}
       <ModelBackground />
 
       {/* Conteúdo principal com hierarquia vertical própria no mobile (Título -> 3D -> Texto -> CTA) e 2 colunas no desktop */}
       <div className="relative z-20 max-w-[1440px] w-full mx-auto px-5 sm:px-8 md:px-12 my-auto py-4 md:py-8">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-10 items-center">
-          {/* Coluna Esquerda (Desktop) / Topo (Mobile): Kicker + Headline Monumental */}
-          <div className="lg:col-span-6 flex flex-col items-start">
+          {/* Coluna Esquerda (Desktop) / Topo (Mobile): Kicker + Headline Monumental com Stagger Text Reveal */}
+          <div ref={fgParallaxRef} className="lg:col-span-6 flex flex-col items-start">
             <div
               data-hero-kicker
               className="will-animate-transform inline-flex items-center gap-2.5 px-3 py-1.5 rounded-sm border border-metalK/40 bg-carbon/90 mb-4"
@@ -35,7 +81,7 @@ export const HeroExperience: React.FC = () => {
                 data-hero-title-back
                 className="will-animate-transform block tracking-[-0.03em] text-mineral"
               >
-                {BRAND_DATA.hero.headlineTop}
+                <StaggerText text={BRAND_DATA.hero.headlineTop} />
               </span>
             </h1>
 
@@ -43,7 +89,7 @@ export const HeroExperience: React.FC = () => {
               data-hero-title-front
               className="will-animate-transform h-editorial text-metalK mt-2"
             >
-              {BRAND_DATA.hero.headlineBottom}
+              <StaggerText text={BRAND_DATA.hero.headlineBottom} wordOffsetStart={1} />
             </p>
 
             {/* Em Desktop (>= 1024px), o texto de apoio e o CTA ficam abaixo do título na coluna esquerda */}
@@ -56,15 +102,17 @@ export const HeroExperience: React.FC = () => {
               </p>
 
               <div className="flex flex-wrap items-center gap-3">
-                <button
-                  type="button"
-                  onClick={() => scrollToSection('#section-built-different')}
-                  className="k-pin-glow group relative min-h-[48px] inline-flex items-center gap-3.5 px-6 py-3.5 bg-mineral text-carbon font-display font-bold text-xs sm:text-sm tracking-[0.2em] uppercase rounded-sm border border-metalK/60 transition-all hover:bg-metalK hover:text-carbon"
-                >
-                  <MetalKPinSVG className="w-5 h-5 transition-transform duration-200 group-hover:rotate-6" />
-                  <span>{BRAND_DATA.hero.ctaPrimary}</span>
-                  <span className="w-2 h-2 rounded-full bg-accent" />
-                </button>
+                <MagneticWrapper maxDisplacement={7}>
+                  <button
+                    type="button"
+                    onClick={() => scrollToSection('#section-built-different')}
+                    className="k-pin-glow btn-fill-sweep group relative min-h-[48px] inline-flex items-center gap-3.5 px-6 py-3.5 bg-mineral text-carbon font-display font-bold text-xs sm:text-sm tracking-[0.2em] uppercase rounded-sm border border-metalK/60 transition-colors"
+                  >
+                    <MetalKPinSVG className="w-5 h-5 transition-transform duration-200 group-hover:rotate-6" />
+                    <span>{BRAND_DATA.hero.ctaPrimary}</span>
+                    <span className="w-2 h-2 rounded-full bg-accent" />
+                  </button>
+                </MagneticWrapper>
               </div>
             </div>
           </div>
@@ -87,7 +135,7 @@ export const HeroExperience: React.FC = () => {
             <button
               type="button"
               onClick={() => scrollToSection('#section-built-different')}
-              className="k-pin-glow group relative min-h-[48px] w-full sm:w-auto justify-center inline-flex items-center gap-3 px-6 py-3.5 bg-mineral text-carbon font-display font-bold text-xs sm:text-sm tracking-[0.2em] uppercase rounded-sm border border-metalK/60 transition-all hover:bg-metalK hover:text-carbon"
+              className="k-pin-glow btn-fill-sweep group relative min-h-[48px] w-full sm:w-auto justify-center inline-flex items-center gap-3 px-6 py-3.5 bg-mineral text-carbon font-display font-bold text-xs sm:text-sm tracking-[0.2em] uppercase rounded-sm border border-metalK/60 transition-colors"
             >
               <MetalKPinSVG className="w-5 h-5" />
               <span>{BRAND_DATA.hero.ctaPrimary}</span>

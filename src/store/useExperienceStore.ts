@@ -9,6 +9,15 @@ export type ActiveSectionId =
 
 export type StageSlotId = 'presence' | 'built-different' | 'spotlight';
 
+export type LoadingStageId =
+  | 'init'
+  | 'hero-assets'
+  | 'downloading-3d'
+  | 'processing-3d'
+  | 'initializing-scene'
+  | 'ready'
+  | 'error-fallback';
+
 export interface TransformTarget {
   position: [number, number, number];
   rotation: [number, number, number];
@@ -33,6 +42,13 @@ interface ExperienceState {
   isDragging3D: boolean;
   isCoarsePointer: boolean;
   isModelLoaded: boolean;
+  isSceneReady: boolean;
+  loadingProgress: number;
+  loadingStage: LoadingStageId;
+  loadingStageLabel: string;
+  loadingItemsLoaded: number;
+  loadingItemsTotal: number;
+  loadingError: string | null;
   webglSupported: boolean;
   prefersReducedMotion: boolean;
   manualPresetLockUntil: number;
@@ -51,6 +67,15 @@ interface ExperienceState {
   setIsDragging3D: (isDragging: boolean) => void;
   setIsCoarsePointer: (coarse: boolean) => void;
   setIsModelLoaded: (loaded: boolean) => void;
+  setIsSceneReady: (ready: boolean) => void;
+  setLoadingState: (partial: {
+    progress?: number;
+    stage?: LoadingStageId;
+    label?: string;
+    itemsLoaded?: number;
+    itemsTotal?: number;
+    error?: string | null;
+  }) => void;
   setWebglSupported: (supported: boolean) => void;
   setPrefersReducedMotion: (reduced: boolean) => void;
   setManualPresetLockUntil: (timestamp: number) => void;
@@ -87,6 +112,13 @@ export const useExperienceStore = create<ExperienceState>((set) => ({
   isDragging3D: false,
   isCoarsePointer: false,
   isModelLoaded: false,
+  isSceneReady: false,
+  loadingProgress: 0,
+  loadingStage: 'init',
+  loadingStageLabel: 'INICIALIZANDO APLICAÇÃO & TIPOGRAFIA',
+  loadingItemsLoaded: 0,
+  loadingItemsTotal: 4,
+  loadingError: null,
   webglSupported: true,
   prefersReducedMotion: false,
   manualPresetLockUntil: 0,
@@ -120,6 +152,20 @@ export const useExperienceStore = create<ExperienceState>((set) => ({
   setIsDragging3D: (isDragging3D) => set({ isDragging3D }),
   setIsCoarsePointer: (isCoarsePointer) => set({ isCoarsePointer }),
   setIsModelLoaded: (isModelLoaded) => set({ isModelLoaded }),
+  setIsSceneReady: (isSceneReady) => set({ isSceneReady }),
+  setLoadingState: (partial) =>
+    set((state) => ({
+      // Nunca permite que a barra de progresso retroceda
+      loadingProgress:
+        partial.progress !== undefined
+          ? Math.max(state.loadingProgress, Math.min(100, partial.progress))
+          : state.loadingProgress,
+      loadingStage: partial.stage ?? state.loadingStage,
+      loadingStageLabel: partial.label ?? state.loadingStageLabel,
+      loadingItemsLoaded: partial.itemsLoaded ?? state.loadingItemsLoaded,
+      loadingItemsTotal: partial.itemsTotal ?? state.loadingItemsTotal,
+      loadingError: partial.error !== undefined ? partial.error : state.loadingError,
+    })),
   setWebglSupported: (webglSupported) => set({ webglSupported }),
   setPrefersReducedMotion: (prefersReducedMotion) => set({ prefersReducedMotion }),
   setManualPresetLockUntil: (manualPresetLockUntil) => set({ manualPresetLockUntil }),

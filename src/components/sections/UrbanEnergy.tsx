@@ -1,14 +1,32 @@
 import React from 'react';
 import { BRAND_DATA } from '../../data/brand';
 import { MetalKPinSVG } from '../ui/BrandEmblems';
+import {
+  AnimatedCounter,
+  MaskRevealContainer,
+  StaggerText,
+} from '../ui/MotionPrimitives';
 
 /**
  * Seção 03 — Urban Energy
- * Grade editorial escalonada com 3 fotografias inéditas em proporções nativas (4:5, 16:10, 3:4),
- * formato WebP real e linha do tempo verificada da herança carioca (1988–Presente).
+ * Grade editorial escalonada com Image Mask Reveal (14.4), Product Card Hover (14.7)
+ * e Animated Number Counter (14.5) na linha do tempo verificada da herança carioca (1988–Presente).
  */
 export const UrbanEnergy: React.FC = () => {
   const [frame1, frame2, frame3] = BRAND_DATA.urbanEnergy.editorialFrames;
+
+  const renderAnimatedYear = (yearStr: string) => {
+    if (yearStr === '1988') {
+      return <AnimatedCounter targetValue={1988} />;
+    }
+    if (yearStr === '1990') {
+      return <AnimatedCounter targetValue={1990} />;
+    }
+    if (yearStr === 'ANOS 2000') {
+      return <AnimatedCounter targetValue={2000} prefix="ANOS " />;
+    }
+    return <span>{yearStr}</span>;
+  };
 
   return (
     <section
@@ -33,7 +51,7 @@ export const UrbanEnergy: React.FC = () => {
             data-ue-reveal
             className="will-animate-transform h-section text-mineral max-w-5xl"
           >
-            {BRAND_DATA.urbanEnergy.sectionHeadline}
+            <StaggerText text={BRAND_DATA.urbanEnergy.sectionHeadline} />
           </h2>
 
           <div className="mt-6 md:mt-8 grid grid-cols-1 md:grid-cols-12 gap-6 items-start">
@@ -52,14 +70,14 @@ export const UrbanEnergy: React.FC = () => {
           </div>
         </div>
 
-        {/* Mosaico Editorial Escalonado (3 fotografias exclusivas em proporções nativas 4:5, 16:10, 3:4) */}
+        {/* Mosaico Editorial Escalonado com Image Mask Reveal (14.4) + Product Card Hover (14.7) */}
         <div className="relative grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-8 items-center">
           {/* Frame 01 — Proporção vertical 4:5 à esquerda */}
           <figure
             data-ue-frame
             className="will-animate-transform lg:col-span-5 relative group"
           >
-            <div className="relative aspect-[4/5] overflow-hidden rounded-sm border border-concrete/25 bg-carbon">
+            <MaskRevealContainer className="relative aspect-[4/5] overflow-hidden rounded-sm border border-concrete/25 bg-carbon">
               <img
                 src={frame1.image}
                 alt={frame1.imageAlt}
@@ -67,13 +85,13 @@ export const UrbanEnergy: React.FC = () => {
                 height={frame1.height}
                 loading="lazy"
                 decoding="async"
-                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                className="product-card-media w-full h-full object-cover"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-carbon via-carbon/20 to-transparent" />
               <div className="absolute top-4 left-4 px-2.5 py-1 bg-carbon/90 border border-metalK/35 text-[10px] tracking-[0.22em] text-metalK uppercase">
                 FRAME {frame1.index} // RIO DE JANEIRO
               </div>
-            </div>
+            </MaskRevealContainer>
             <figcaption className="mt-4 pr-2">
               <h3 className="font-display text-lg uppercase text-mineral font-bold tracking-tight">
                 {frame1.captionTitle}
@@ -87,7 +105,7 @@ export const UrbanEnergy: React.FC = () => {
           {/* Frame 02 — Proporção horizontal ampla 16:10 deslocada à direita superior */}
           <div className="lg:col-span-7 flex flex-col gap-10 lg:pl-8">
             <figure data-ue-frame className="will-animate-transform relative group">
-              <div className="relative aspect-[16/10] overflow-hidden rounded-sm border border-concrete/25 bg-carbon">
+              <MaskRevealContainer className="relative aspect-[16/10] overflow-hidden rounded-sm border border-concrete/25 bg-carbon">
                 <img
                   src={frame2.image}
                   alt={frame2.imageAlt}
@@ -95,13 +113,13 @@ export const UrbanEnergy: React.FC = () => {
                   height={frame2.height}
                   loading="lazy"
                   decoding="async"
-                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                  className="product-card-media w-full h-full object-cover"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-carbon via-transparent to-transparent" />
                 <div className="absolute top-4 right-4 px-2.5 py-1 bg-carbon/90 border border-metalK/35 text-[10px] tracking-[0.22em] text-metalK uppercase">
                   FRAME {frame2.index} // CULTURA URBANA
                 </div>
-              </div>
+              </MaskRevealContainer>
               <figcaption className="mt-4 max-w-xl">
                 <h3 className="font-display text-lg uppercase text-mineral font-bold tracking-tight">
                   {frame2.captionTitle}
@@ -131,7 +149,7 @@ export const UrbanEnergy: React.FC = () => {
                 data-ue-frame
                 className="will-animate-transform sm:col-span-7 relative group"
               >
-                <div className="relative aspect-[3/4] overflow-hidden rounded-sm border border-concrete/25 bg-carbon">
+                <MaskRevealContainer className="relative aspect-[3/4] overflow-hidden rounded-sm border border-concrete/25 bg-carbon">
                   <img
                     src={frame3.image}
                     alt={frame3.imageAlt}
@@ -139,13 +157,13 @@ export const UrbanEnergy: React.FC = () => {
                     height={frame3.height}
                     loading="lazy"
                     decoding="async"
-                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                    className="product-card-media w-full h-full object-cover"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-carbon via-transparent to-transparent" />
                   <div className="absolute top-4 left-4 px-2.5 py-1 bg-carbon/90 border border-metalK/35 text-[10px] tracking-[0.22em] text-metalK uppercase">
                     FRAME {frame3.index} // PRESENÇA
                   </div>
-                </div>
+                </MaskRevealContainer>
               </figure>
 
               <div className="sm:col-span-5 pb-2">
@@ -163,7 +181,7 @@ export const UrbanEnergy: React.FC = () => {
           </div>
         </div>
 
-        {/* Linha do tempo verificada (Seção 0): 1988 -> 1990 -> Anos 2000 -> Presente */}
+        {/* Linha do tempo verificada com 14.5. Animated Number Counter (1988 -> 1990 -> Anos 2000 -> Presente) */}
         <div className="mt-20 md:mt-32 pt-10 border-t border-concrete/20">
           <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-8 gap-4">
             <div>
@@ -188,8 +206,8 @@ export const UrbanEnergy: React.FC = () => {
               >
                 <div>
                   <div className="flex items-center justify-between gap-2 mb-3">
-                    <span className="font-display text-2xl text-metalK font-bold">
-                      {item.year}
+                    <span className="font-display text-2xl text-metalK font-bold tabular-nums">
+                      {renderAnimatedYear(item.year)}
                     </span>
                     <span className="text-[9px] tracking-[0.2em] uppercase text-concrete border border-concrete/25 px-2 py-0.5">
                       {item.location}

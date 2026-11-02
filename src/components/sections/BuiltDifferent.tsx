@@ -4,11 +4,12 @@ import { useExperienceStore } from '../../store/useExperienceStore';
 import { EngineeringLayerEmblemSVG, MetalKPinSVG } from '../ui/BrandEmblems';
 import { ProductDetails } from '../product/ProductDetails';
 import { Product3DStage } from '../product/Product3D';
+import { MaskRevealContainer, StaggerText } from '../ui/MotionPrimitives';
 
 /**
  * Seção 02 — Built Different
  * Composição editorial assimétrica com visor 3D dedicado e desobstruído,
- * closes fotográficos macro em WebP e seletor semântico de camadas (<button>).
+ * Image Mask Reveal (14.4) + Product Card Hover (14.7) nos closes macro e Stagger Text (14.1).
  */
 export const BuiltDifferent: React.FC = () => {
   const activeEngineeringIndex = useExperienceStore((s) => s.activeEngineeringIndex);
@@ -61,7 +62,7 @@ export const BuiltDifferent: React.FC = () => {
               data-bd-reveal
               className="will-animate-transform h-section text-mineral"
             >
-              {BRAND_DATA.engineering.sectionHeadline}
+              <StaggerText text={BRAND_DATA.engineering.sectionHeadline} />
             </h2>
           </div>
 
@@ -99,11 +100,8 @@ export const BuiltDifferent: React.FC = () => {
               />
             </div>
 
-            {/* Close fotográfico macro 01: Solado de borracha vulcanizada */}
-            <div
-              data-bd-mask-photo
-              className="will-animate-transform relative aspect-[16/10] overflow-hidden rounded-sm border border-concrete/20 bg-carbon"
-            >
+            {/* Close fotográfico macro 01: Image Mask Reveal (14.4) + Product Card Hover (14.7) */}
+            <MaskRevealContainer className="relative aspect-[16/10] overflow-hidden rounded-sm border border-concrete/20 bg-carbon">
               <img
                 src="/assets/images/eng-vulcanized.webp"
                 alt="Close macro do solado de borracha vulcanizada tratorada sobre concreto e asfalto molhado"
@@ -111,7 +109,7 @@ export const BuiltDifferent: React.FC = () => {
                 height={800}
                 loading="lazy"
                 decoding="async"
-                className="w-full h-full object-cover scale-105 transition-transform duration-500 hover:scale-100"
+                className="product-card-media w-full h-full object-cover"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-carbon via-carbon/35 to-transparent" />
 
@@ -128,13 +126,10 @@ export const BuiltDifferent: React.FC = () => {
                   REF. LINHA RAKKA
                 </span>
               </div>
-            </div>
+            </MaskRevealContainer>
 
             {/* Close fotográfico macro 02: Cabedal em Neoprene + Hydro-Off */}
-            <div
-              data-bd-mask-photo
-              className="will-animate-transform lg:ml-10 relative aspect-[16/9] overflow-hidden rounded-sm border border-concrete/20 bg-carbon"
-            >
+            <MaskRevealContainer className="lg:ml-10 relative aspect-[16/9] overflow-hidden rounded-sm border border-concrete/20 bg-carbon">
               <img
                 src="/assets/images/eng-neoprene-hydro.webp"
                 alt="Detalhe macro da tira de nylon de alta tenacidade forrada em neoprene com repelência Hydro-Off"
@@ -142,7 +137,7 @@ export const BuiltDifferent: React.FC = () => {
                 height={720}
                 loading="lazy"
                 decoding="async"
-                className="w-full h-full object-cover"
+                className="product-card-media w-full h-full object-cover"
               />
               <div className="absolute inset-0 bg-gradient-to-r from-carbon/95 via-carbon/55 to-transparent" />
               <div className="absolute inset-y-0 left-0 p-5 sm:p-7 flex flex-col justify-end max-w-md">
@@ -156,7 +151,7 @@ export const BuiltDifferent: React.FC = () => {
                   Nylon/poliéster de alta tenacidade que elimina o atrito e evita bolhas no uso urbano contínuo.
                 </p>
               </div>
-            </div>
+            </MaskRevealContainer>
           </div>
 
           {/* Coluna direita (lg:col-span-5): Botões nativos de inspeção 3D por camada (gap-3 >= 8px, min-h-[48px]) */}
@@ -179,10 +174,10 @@ export const BuiltDifferent: React.FC = () => {
                   data-bd-step
                   onClick={() => handleSelectLayer(index)}
                   aria-pressed={isActive}
-                  className={`k-pin-glow min-h-[48px] w-full text-left rounded-sm border p-4 sm:p-5 transition-all ${
+                  className={`k-pin-glow group min-h-[48px] w-full text-left rounded-sm border p-4 sm:p-5 transition-all ${
                     isActive
-                      ? 'border-metalK bg-[#121215]'
-                      : 'border-concrete/20 bg-[#0C0C0E] hover:border-concrete/45'
+                      ? 'border-metalK bg-[#141418]'
+                      : 'border-concrete/20 bg-[#0C0C0E] hover:border-metalK/55 hover:bg-[#111114]'
                   }`}
                 >
                   <div className="flex items-start justify-between gap-4">
@@ -197,7 +192,7 @@ export const BuiltDifferent: React.FC = () => {
                     </div>
                     <EngineeringLayerEmblemSVG
                       layerId={layer.id}
-                      className="w-8 h-8 shrink-0"
+                      className="w-8 h-8 shrink-0 transition-transform duration-300 group-hover:scale-105"
                     />
                   </div>
 

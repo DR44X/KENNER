@@ -6,6 +6,7 @@ import { Product3D } from './components/product/Product3D';
 import { ScrollController } from './components/scroll/ScrollController';
 import { useExperienceStore } from './store/useExperienceStore';
 import { TractorSoleSilhouetteSVG } from './components/ui/BrandEmblems';
+import { InfiniteLineTicker } from './components/ui/MotionPrimitives';
 
 // React.lazy + Suspense nas seções abaixo da dobra conforme Seção 8
 const UrbanEnergy = lazy(() =>
@@ -73,6 +74,10 @@ export const App: React.FC = () => {
       {/* Conteúdo narrativo em camadas */}
       <main id="main-content" className="relative">
         <HeroExperience />
+
+        {/* 14.3. Infinite Horizontal Ticker com linhas e tecnologias Kenner */}
+        <InfiniteLineTicker />
+
         <BuiltDifferent />
 
         <Suspense

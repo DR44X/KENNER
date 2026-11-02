@@ -30,6 +30,44 @@ DefaultLoadingManager.setURLModifier((url) => {
   return url;
 });
 
+// Conecta o DefaultLoadingManager do Three.js à telemetria real de carregamento no store
+DefaultLoadingManager.onStart = (_url, itemsLoaded, itemsTotal) => {
+  const store = useExperienceStore.getState();
+  store.setLoadingState({
+    stage: 'downloading-3d',
+    label: 'INICIANDO TRANSFERÊNCIA 3D & HDRI',
+    itemsLoaded,
+    itemsTotal: Math.max(4, itemsTotal),
+  });
+};
+
+DefaultLoadingManager.onProgress = (url, itemsLoaded, itemsTotal) => {
+  const store = useExperienceStore.getState();
+  const safeTotal = Math.max(1, itemsTotal);
+  const ratio = Math.min(1, itemsLoaded / safeTotal);
+  // Progresso real entre 25% e 70% proporcional aos recursos 3D baixados (GLB, Draco WASM, HDRI)
+  const downloadProgress = Math.round(25 + ratio * 45);
+  const shortName = url.split('/').pop() || 'recurso 3D';
+
+  store.setLoadingState({
+    progress: downloadProgress,
+    stage: 'downloading-3d',
+    label: `BAIXANDO: ${shortName.toUpperCase()}`,
+    itemsLoaded,
+    itemsTotal: safeTotal,
+  });
+};
+
+DefaultLoadingManager.onError = (url) => {
+  const store = useExperienceStore.getState();
+  const shortName = url.split('/').pop() || url;
+  store.setLoadingState({
+    stage: 'error-fallback',
+    label: 'FALHA AO CARREGAR RECURSO 3D',
+    error: `Não foi possível carregar ${shortName}. Modo de contingência ativo.`,
+  });
+};
+
 // Pré-carregamento com decoder Draco local (/assets/draco/gltf/)
 useGLTF.preload('/assets/models/kenner-rakka.glb', '/assets/draco/gltf/');
 
@@ -41,7 +79,11 @@ const KennerRakkaMesh: React.FC = () => {
   const { scene } = useGLTF('/assets/models/kenner-rakka.glb', '/assets/draco/gltf/');
   const groupRef = useRef<Group>(null);
   const kHighlightLightRef = useRef<PointLight>(null);
+  const firstFrameRenderedRef = useRef(false);
+
   const setIsModelLoaded = useExperienceStore((s) => s.setIsModelLoaded);
+  const setIsSceneReady = useExperienceStore((s) => s.setIsSceneReady);
+  const setLoadingState = useExperienceStore((s) => s.setLoadingState);
 
   const clonedScene = useMemo(() => {
     const clone = scene.clone(true);
@@ -68,10 +110,33 @@ const KennerRakkaMesh: React.FC = () => {
 
   useEffect(() => {
     setIsModelLoaded(true);
-  }, [setIsModelLoaded]);
+    setLoadingState({
+      progress: 85,
+      stage: 'processing-3d',
+      label: 'MALHA DRACO & MATERIAIS PBR PROCESSADOS',
+    });
+  }, [setIsModelLoaded, setLoadingState]);
 
   useFrame((state, delta) => {
     if (!groupRef.current) return;
+
+    // Marca 100% somente quando os shaders WebGL foram compilados e o 1º frame real está em renderização
+    if (!firstFrameRenderedRef.current) {
+      firstFrameRenderedRef.current = true;
+      try {
+        state.gl.compile(state.scene, state.camera);
+      } catch {
+        // Ignora caso o driver já tenha compilado
+      }
+      const st = useExperienceStore.getState();
+      st.setLoadingState({
+        progress: 100,
+        stage: 'ready',
+        label: 'EXPERIÊNCIA PRONTA PARA INTERAÇÃO',
+        itemsLoaded: st.loadingItemsTotal,
+      });
+      setIsSceneReady(true);
+    }
 
     const store = useExperienceStore.getState();
     const {
@@ -351,13 +416,13 @@ export const Product3DStage: React.FC<{
 };
 
 export const Product3D: React.FC = () => {
-  const isModelLoaded = useExperienceStore((s) => s.isModelLoaded);
   const webglSupported = useExperienceStore((s) => s.webglSupported);
   const activeStageSlot = useExperienceStore((s) => s.activeStageSlot);
   const setPointer = useExperienceStore((s) => s.setPointer);
   const setUserOrbitOffset = useExperienceStore((s) => s.setUserOrbitOffset);
   const setIsDragging3D = useExperienceStore((s) => s.setIsDragging3D);
   const setIsCoarsePointer = useExperienceStore((s) => s.setIsCoarsePointer);
+  const setLoadingState = useExperienceStore((s) => s.setLoadingState);
 
   const [hostElement] = useState<HTMLDivElement | null>(() => {
     if (typeof document === 'undefined') return null;
@@ -367,6 +432,56 @@ export const Product3D: React.FC = () => {
   });
 
   const dragStartRef = useRef<{ x: number; y: number; rotX: number; rotY: number } | null>(null);
+
+  // Monitora recursos reais iniciais (Fontes + Fotografia Hero) e timeout de segurança
+  useEffect(() => {
+    let cancelled = false;
+
+    if (typeof document !== 'undefined' && document.fonts) {
+      document.fonts.ready.then(() => {
+        if (cancelled) return;
+        setLoadingState({
+          progress: 10,
+          stage: 'init',
+          label: 'TIPOGRAFIA CLASH DISPLAY & INTER ATIVAS',
+        });
+      });
+    }
+
+    const heroImg = new Image();
+    heroImg.src = '/assets/images/hero-model-editorial.webp';
+    const markHeroReady = () => {
+      if (cancelled) return;
+      setLoadingState({
+        progress: 25,
+        stage: 'hero-assets',
+        label: 'FOTOGRAFIA EDITORIAL HERO CARREGADA',
+      });
+    };
+    if (heroImg.complete) {
+      markHeroReady();
+    } else {
+      heroImg.onload = markHeroReady;
+      heroImg.onerror = markHeroReady;
+    }
+
+    // Timeout de segurança: nunca deixa o usuário preso se algum recurso travar na rede
+    const safetyTimer = window.setTimeout(() => {
+      const st = useExperienceStore.getState();
+      if (!st.isSceneReady && st.loadingStage !== 'error-fallback') {
+        st.setLoadingState({
+          stage: 'error-fallback',
+          label: 'TEMPO LIMITE ATINGIDO — LIBERANDO EXPERIÊNCIA',
+          error: 'Conexão lenta detectada. Continuando carregamento em segundo plano.',
+        });
+      }
+    }, 10000);
+
+    return () => {
+      cancelled = true;
+      window.clearTimeout(safetyTimer);
+    };
+  }, [setLoadingState]);
 
   // Move o host persistente do Canvas para o slot da seção ativa sem desmontar o contexto WebGL
   useEffect(() => {
@@ -386,7 +501,7 @@ export const Product3D: React.FC = () => {
     return () => window.cancelAnimationFrame(rafId);
   }, [activeStageSlot, hostElement]);
 
-  // Detecta pointer: coarse (touch) vs mouse e configura ouvintes apropriados
+  // Detecta pointer: coarse (touch) vs mouse e configura ouvintes apropriados (1 único listener global)
   useEffect(() => {
     const coarseMq = window.matchMedia('(pointer: coarse)');
     setIsCoarsePointer(coarseMq.matches);
@@ -485,7 +600,7 @@ export const Product3D: React.FC = () => {
       role="region"
       aria-label="Visualização 3D interativa da sandália Kenner (referência linha Rakka)"
     >
-      <Preloader visible={!isModelLoaded} />
+      <Preloader />
 
       <Canvas
         shadows
@@ -494,6 +609,16 @@ export const Product3D: React.FC = () => {
           antialias: true,
           alpha: true,
           powerPreference: 'high-performance',
+        }}
+        onCreated={() => {
+          const st = useExperienceStore.getState();
+          if (!st.isSceneReady) {
+            st.setLoadingState({
+              progress: Math.max(st.loadingProgress, 90),
+              stage: 'initializing-scene',
+              label: 'INICIALIZANDO RENDERIZADOR WEBGL',
+            });
+          }
         }}
       >
         <Suspense fallback={null}>
